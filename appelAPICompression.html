@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compression d'Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            margin: auto;
+        }
+
+        label {
+            margin-bottom: 8px;
+        }
+
+        input {
+            margin-bottom: 16px;
+            padding: 8px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <form id="compressionForm">
+        <label for="imageUrl">URL de l'image :</label>
+        <input type="url" id="imageUrl" name="imageUrl" required>
+
+        <label for="maxSize">Taille maximale (KB) :</label>
+        <input type="number" id="maxSize" name="maxSize" required>
+
+        <button type="button" onclick="compressImage()">Compresser</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        function compressImage() {
+            // Récupération des données du formulaire
+            var imageUrl = document.getElementById('imageUrl').value;
+            var maxSize = document.getElementById('maxSize').value;
+
+            // Envoi des données au serveur (remplacez l'URL par votre API)
+            fetch('http://127.0.0.1:5000/compress', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ input_url: imageUrl, max_size: maxSize }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Affichage des résultats
+                var resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `<p>Résultats de la compression :</p>
+                                       <p>Taille de l'entrée : ${data.input_size} octets</p>
+                                       <p>Taille de la sortie : ${data.output_size} octets</p>
+                                       <p>Acienne dimension : ${data.ancienne_dimensions}</p>
+                                       <p>Nouvelles dimensions : ${data.nouvelles_dimensions}</p>
+                                       <p>Anncien format : ${data.input_format}</p>
+                                       <p>Nouveau format : ${data.output_format}</p>`;
+                                       resultDiv.innerHTML += `<img src="http://127.0.0.1:5000/get_image" alt="Image compressée">`
+
+
+            })
+            .catch(error => console.error('Erreur lors de la compression:', error));
+        }
+    </script>
+
+</body>
+</html>
